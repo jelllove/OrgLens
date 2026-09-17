@@ -71,6 +71,7 @@ MinVersion=6.1sp1
 LicenseFile=..\LICENSE
 OutputDir={#OutputDir}
 OutputBaseFilename={#OutputName}
+SetupIconFile=..\assets\orglens.ico
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -102,6 +103,7 @@ Source: "{#PackageDir}\OrgLens.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\OrgLens.Desktop.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\Newtonsoft.Json.LICENSE.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PackageDir}\Lucide.LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\OrgLens.Preview.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\OrgLens.Preview.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion
@@ -632,6 +634,7 @@ begin
   BackupManagedFile('OrgLens.Desktop.dll');
   BackupManagedFile('Newtonsoft.Json.dll');
   BackupManagedFile('Newtonsoft.Json.LICENSE.md');
+  BackupManagedFile('Lucide.LICENSE.txt');
   BackupManagedFile('OrgLens.Preview.exe');
   BackupManagedFile('OrgLens.Preview.exe.config');
   BackupManagedFile('README.md');

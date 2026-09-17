@@ -17,6 +17,10 @@ namespace OrgLens.Outlook
     {
         [DispId(1)]
         void OpenSettings([In, MarshalAs(UnmanagedType.Interface)] Office.IRibbonControl control);
+
+        [DispId(2)]
+        [return: MarshalAs(UnmanagedType.IDispatch)]
+        object GetRibbonImage([In, MarshalAs(UnmanagedType.Interface)] Office.IRibbonControl control);
     }
 
     [ComVisible(true)]
@@ -28,6 +32,7 @@ namespace OrgLens.Outlook
     {
         private OutlookApi.Application application;
         private ModelessSettingsWindow settingsWindow;
+        private object ribbonImage;
 
         public void OnConnection(object application, ConnectMode connectMode, object addInInstance, ref Array custom)
         {
@@ -45,6 +50,9 @@ namespace OrgLens.Outlook
             var window = settingsWindow;
             settingsWindow = null;
             window?.Dispose();
+            var image = ribbonImage;
+            ribbonImage = null;
+            if (image != null && Marshal.IsComObject(image)) Marshal.ReleaseComObject(image);
         }
 
         public void OnAddInsUpdate(ref Array custom) { }
@@ -58,9 +66,15 @@ namespace OrgLens.Outlook
                 "<ribbon><tabs><tab id=\"OrgLensTab\" label=\"OrgLens\">" +
                 "<group id=\"OrgLensFormatting\" label=\"Inbox formatting\">" +
                 "<button id=\"OrgLensSettings\" label=\"Formatting rules\" size=\"large\" " +
-                "imageMso=\"ConditionalFormattingHighlightCellsRules\" onAction=\"OpenSettings\" " +
+                "getImage=\"GetRibbonImage\" onAction=\"OpenSettings\" " +
                 "screentip=\"OrgLens\" supertip=\"Format BOSS, custom senders, and messages addressed to you.\"/>" +
                 "</group></tab></tabs></ribbon></customUI>";
+        }
+
+        public object GetRibbonImage(Office.IRibbonControl control)
+        {
+            if (ribbonImage == null) ribbonImage = RibbonPicture.Create();
+            return ribbonImage;
         }
 
         public void OpenSettings(Office.IRibbonControl control)

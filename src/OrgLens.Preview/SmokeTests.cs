@@ -47,6 +47,7 @@ namespace OrgLens.Preview
             {
                 Show(form);
                 var editor = Find<GroupSettingsControl>(form, "GroupedSettings");
+                Assert(form.ShowIcon && form.Icon != null, "The settings window must display the OrgLens icon.");
                 var preview = Find<MailPreviewControl>(form, "MessagePreview");
                 var accounts = Find<ComboBox>(form, "AccountSelector");
                 Assert(accounts.Items.Count == 2 && accounts.SelectedIndex == 0, "First account should load automatically.");

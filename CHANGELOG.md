@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.4
+
+- Replaces Outlook's generic formatting icon with a blue organization-chart icon
+  based on the free, ISC-licensed Lucide Network icon.
+- Uses the same icon for the settings window, preview executable, installer and
+  Windows Apps entry. Includes multiple Windows icon sizes and transparent Ribbon artwork.
+- Preserves the upstream license in source, embedded resources and installation packages.
+- Adds icon resource and COM `IPictureDisp` callback regression checks.
+
+No formatting rules or settings-file schema changes. Close Outlook before upgrading.
+
 ## 0.2.3
 
 - Adds a standard Windows **Setup.exe** wizard: double-click to install, without

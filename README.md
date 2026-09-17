@@ -5,7 +5,7 @@ Exchange account's published manager chain and creates real Outlook conditional
 formatting rules for BOSS, custom senders, and mail addressed explicitly to you.
 No Graph application registration, cloud service, or email-body analysis is involved.
 
-[Download Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.3/OrgLens-0.2.3-Setup.exe)
+[Download Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.4/OrgLens-0.2.4-Setup.exe)
 | [All downloads](https://github.com/jelllove/OrgLens/releases/latest)
 | [Release notes](CHANGELOG.md)
 | [MIT license](LICENSE)
@@ -14,7 +14,7 @@ No Graph application registration, cloud service, or email-body analysis is invo
 
 *Actual application screenshot using fictional people and messages. No real mailbox data.*
 
-**Quick install:** close Outlook, double-click **OrgLens-0.2.3-Setup.exe**, and
+**Quick install:** close Outlook, double-click **OrgLens-0.2.4-Setup.exe**, and
 follow the setup wizard. No unzip, terminal commands, or administrator rights
 are required. Reopen Outlook and choose **OrgLens > Formatting rules**.
 
@@ -45,7 +45,7 @@ recipient metadata in the selected account's Inbox.
 
 Download and extract [the release ZIP](https://github.com/jelllove/OrgLens/releases/latest),
 then open `OrgLens.Preview.exe` in the extracted folder.
-After building from source, use `artifacts\OrgLens-0.2.3\OrgLens.Preview.exe`.
+After building from source, use `artifacts\OrgLens-0.2.4\OrgLens.Preview.exe`.
 
 The clearly marked demo uses fictional people and messages. Its Apply and Remove
 buttons change only the demo's in-memory state. It does not connect to Outlook.
@@ -102,7 +102,7 @@ Outlook, Outlook on the web, Mac, IMAP, or personal Outlook.com manager discover
 Company policies may prohibit unsigned or user-installed COM add-ins; this local
 prototype is unsigned and does not bypass those policies.
 
-1. Download [OrgLens-0.2.3-Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.3/OrgLens-0.2.3-Setup.exe).
+1. Download [OrgLens-0.2.4-Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.4/OrgLens-0.2.4-Setup.exe).
 2. Close classic Outlook.
 3. **Double-click the EXE** and follow the setup wizard. It checks prerequisites,
    installs the files, and registers the correct 32-bit or 64-bit add-in automatically.
@@ -225,8 +225,8 @@ can rebuild Setup.exe from an already built package without rerunning the app bu
 Optional integrity verification (not required for installation), in PowerShell:
 
 ```powershell
-(Get-FileHash .\OrgLens-0.2.3-Setup.exe -Algorithm SHA256).Hash.ToLowerInvariant()
-Get-Content .\OrgLens-0.2.3-Setup.exe.sha256
+(Get-FileHash .\OrgLens-0.2.4-Setup.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+Get-Content .\OrgLens-0.2.4-Setup.exe.sha256
 ```
 
 The first line must match the hash at the start of the checksum file.
@@ -296,6 +296,29 @@ and real Outlook rendering. If the tab is missing, check **File > Options >
 Add-ins > Manage COM Add-ins** and your organization's add-in policy.
 
 ## Repository and license
+
+### Icon attribution
+
+The blue organization-chart mark is adapted from
+[Lucide Network](https://lucide.dev/icons/network), by Lucide Icons and Contributors,
+under the [ISC license](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
+It is free for commercial use and modification with the copyright/license notice retained.
+OrgLens changes the stroke color to `#2563eb` and renders Windows PNG/ICO sizes;
+the icon geometry is unchanged. It is not a Microsoft or Outlook logo.
+
+The source is `assets/orglens.svg`; the upstream SVG blob is
+`e166b3535ca33f9ceee49d2215dd78374689865e`.
+The complete upstream notice is retained as `assets/Lucide.LICENSE.txt`,
+embedded in the UI assembly, and installed as `Lucide.LICENSE.txt`.
+Regenerate the checked-in PNG/ICO assets using built-in Windows WPF:
+
+```powershell
+powershell.exe -NoProfile -STA -File .\scripts\Generate-Icons.ps1
+```
+
+No additional image-conversion packages are required.
+
+### Software licenses
 
 Source and documentation are licensed under the [MIT License](LICENSE).
 Newtonsoft.Json is a separate MIT-licensed dependency; its original license notice

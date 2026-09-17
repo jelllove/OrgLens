@@ -5,7 +5,7 @@
     <Deterministic>true</Deterministic>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Version>0.2.3</Version>
+    <Version>0.2.4</Version>
     <Company>OrgLens</Company>
     <Copyright>Copyright (c) 2026 OrgLens contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

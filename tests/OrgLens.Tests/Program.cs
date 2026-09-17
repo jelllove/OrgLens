@@ -38,6 +38,7 @@ namespace OrgLens.Tests
             CheckConfiguration();
             CheckPersistence();
             CheckAddInInterfaces();
+            CheckIconAssets();
             Console.WriteLine((failed == 0 ? "PASS: " : "FAIL: ") + passed + " passed, " +
                 failed + " failed OrgLens checks.");
             return failed == 0 ? 0 : 1;
@@ -130,6 +131,8 @@ namespace OrgLens.Tests
                 XNamespace ns = "http://schemas.microsoft.com/office/2009/07/customui";
                 var button = document.Descendants(ns + "button").Single();
                 Equal("OpenSettings", (string)button.Attribute("onAction"));
+                Equal("GetRibbonImage", (string)button.Attribute("getImage"));
+                Equal(null, (string)button.Attribute("imageMso"));
                 Equal(null, new Connect().GetCustomUI("Microsoft.Outlook.Mail.Read"));
             });
             Check("COM exposes add-in, Ribbon, and callback interfaces without Outlook", () =>

@@ -4,5 +4,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrgLens.Core\OrgLens.Core.csproj" />
+    <EmbeddedResource Include="..\..\assets\orglens-32.png" LogicalName="OrgLens.Images.Ribbon.png" />
+    <EmbeddedResource Include="..\..\assets\orglens.ico" LogicalName="OrgLens.Images.Application.ico" />
+    <EmbeddedResource Include="..\..\assets\Lucide.LICENSE.txt" LogicalName="OrgLens.Images.License.txt" />
   </ItemGroup>
 </Project>

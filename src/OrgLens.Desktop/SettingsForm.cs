@@ -16,6 +16,7 @@ namespace OrgLens.Desktop
         private readonly ISettingsDialogs dialogs;
         private readonly List<Font> ownedFonts = new List<Font>();
         private readonly ToolTip tooltips = new ToolTip { AutoPopDelay = 20000 };
+        private readonly Icon windowIcon;
         private readonly ComboBox accountSelector;
         private readonly GroupSettingsControl editor;
         private readonly MailPreviewControl preview;
@@ -59,7 +60,9 @@ namespace OrgLens.Desktop
             StartPosition = FormStartPosition.CenterScreen;
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScaleDimensions = new SizeF(96F, 96F);
-            ShowIcon = false;
+            windowIcon = OrgLensImages.CreateWindowIcon();
+            Icon = windowIcon;
+            ShowIcon = true;
 
             var root = new TableLayoutPanel
             {
@@ -238,6 +241,7 @@ namespace OrgLens.Desktop
             base.Dispose(disposing);
             if (!disposing) return;
             tooltips.Dispose();
+            windowIcon?.Dispose();
             foreach (var font in ownedFonts) font.Dispose();
             ownedFonts.Clear();
         }
