@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrgLens.Core\OrgLens.Core.csproj" />
+    <ProjectReference Include="..\..\src\OrgLens.Outlook\OrgLens.Outlook.csproj" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.Office.Interop.Outlook">
+      <HintPath>$(OfficePiaRoot)\Microsoft.Office.Interop.Outlook\15.0.0.0__71e9bce111e9429c\Microsoft.Office.Interop.Outlook.dll</HintPath>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

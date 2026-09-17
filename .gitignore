@@ -1,0 +1,34 @@
+# Build and release output
+[Bb]in/
+[Oo]bj/
+artifacts/
+packages/
+TestResults/
+*.nupkg
+*.snupkg
+
+# Local IDE state
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.sln.DotSettings.user
+
+# Personal settings and signing credentials (never publish real contact lists)
+.local/
+*.orglens.json
+orglens-settings.json
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.snk
+*.key
+*.log
+*.tmp
+Thumbs.db
+.DS_Store

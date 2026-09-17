@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>0.2.2</Version>
+    <Company>OrgLens</Company>
+    <Copyright>Copyright (c) 2026 OrgLens contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <OfficePiaRoot Condition="'$(OfficePiaRoot)' == ''">$(WINDIR)\assembly\GAC_MSIL</OfficePiaRoot>
+  </PropertyGroup>
+</Project>
