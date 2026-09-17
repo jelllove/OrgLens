@@ -16,6 +16,12 @@ namespace OrgLens.Tests
         [STAThread]
         private static int Main(string[] args)
         {
+            if (args.Length == 1 && args[0] == "--installer-process-fixture")
+            {
+                Console.WriteLine("Ready: harmless installer process-detection fixture.");
+                System.Threading.Thread.Sleep(TimeSpan.FromMinutes(2));
+                return 0;
+            }
             if (args.Length == 1 && args[0] == "--outlook-read-only") return OutlookReadOnly.Run();
             if (args.Length == 1 && args[0] == "--rule-persistence")
             {
@@ -24,7 +30,7 @@ namespace OrgLens.Tests
                 return failed == 0 ? 0 : 1;
             }
             if (args.Length != 0)
-                throw new ArgumentException("Usage: OrgLens.Tests.exe [--outlook-read-only | --rule-persistence]");
+                throw new ArgumentException("Usage: OrgLens.Tests.exe [--outlook-read-only | --rule-persistence | --installer-process-fixture]");
             CheckHierarchy();
             CheckDaslEvaluator();
             CheckGroupedRules();

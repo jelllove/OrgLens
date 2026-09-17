@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.3
+
+- Adds a standard Windows **Setup.exe** wizard: double-click to install, without
+  extracting a ZIP or running PowerShell commands.
+- Installs and registers the add-in for the current user without administrator
+  rights, and supports removal from Windows **Installed apps**.
+- Checks for classic Outlook and .NET Framework 4.8, selects the appropriate
+  Outlook registry architecture, and requires closing Outlook before modifying
+  the installation.
+- Keeps portable settings, account caches, and Outlook formatting views when
+  upgrading or uninstalling. The developer ZIP and scripts remain available.
+- Adds native installer build automation and isolated installation tests.
+
+The add-in behavior and settings schema are unchanged from 0.2.2.
+The installer is unsigned; organizational signing and add-in policies still apply.
+
 ## 0.2.2
 
 - All four color selectors show a color swatch and name in both the dropdown

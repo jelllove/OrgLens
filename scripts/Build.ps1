@@ -1,5 +1,9 @@
 [CmdletBinding()]
-param([switch]$SkipTests)
+param(
+    [switch]$SkipTests,
+    [switch]$SkipInstaller,
+    [string]$InnoCompilerPath
+)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Push-Location $root
@@ -41,6 +45,10 @@ try {
     $hash = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
     [IO.File]::WriteAllText("$archive.sha256", "$hash  $packageName.zip`n", [Text.Encoding]::ASCII)
     Write-Host "Package ready: $package"
-    Write-Host 'Run OrgLens.Preview.exe for the sample-only demo; Install.ps1 registers the real Outlook add-in.'
+    if (-not $SkipInstaller) {
+        $setup = & (Join-Path $PSScriptRoot 'Build-Installer.ps1') -PackagePath $package -InnoCompilerPath $InnoCompilerPath
+        Write-Host "Double-click installer ready: $($setup.Path)"
+    }
+    Write-Host 'Build never installs the add-in or changes Outlook. The ZIP remains available for the standalone preview and scripted deployment.'
 }
 finally { Pop-Location }
