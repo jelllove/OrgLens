@@ -41,6 +41,7 @@ namespace OrgLens.Desktop
         private bool busy;
         private bool initialized;
         private bool accountConfigLoaded;
+        private LoadingProgress loadingProgress;
 
         public SettingsForm(IOrgLensService service) : this(service, new SettingsDialogs()) { }
 
@@ -196,7 +197,13 @@ namespace OrgLens.Desktop
             if (!initialized)
             {
                 initialized = true;
-                LoadAccounts();
+                BeginInvoke((MethodInvoker)(() =>
+                {
+                    if (IsDisposed || Disposing || !Visible) return;
+                    // Paint all settings controls before blocking the Outlook STA on directory work.
+                    Refresh();
+                    LoadAccounts();
+                }));
             }
             base.OnShown(e);
         }
@@ -238,6 +245,7 @@ namespace OrgLens.Desktop
 
         protected override void Dispose(bool disposing)
         {
+            if (disposing) loadingProgress?.Dispose();
             base.Dispose(disposing);
             if (!disposing) return;
             tooltips.Dispose();

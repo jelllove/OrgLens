@@ -21,21 +21,13 @@ namespace OrgLens.Tests
 
         private static void CheckIconAssets()
         {
-            Check("branded icon resources retain transparent edges and the blue organization mark", () =>
+            Check("mail-highlight artwork stays colorful and transparent at every icon size", () =>
             {
                 using (var image = OrgLensImages.CreateRibbonBitmap())
                 {
                     Equal(32, image.Width);
                     Equal(32, image.Height);
-                    Equal(0, (int)image.GetPixel(0, 0).A);
-                    int bluePixels = 0;
-                    for (int y = 0; y < image.Height; y++)
-                        for (int x = 0; x < image.Width; x++)
-                        {
-                            var pixel = image.GetPixel(x, y);
-                            if (pixel.A == 255 && pixel.B > 200 && pixel.R < 60) bluePixels++;
-                        }
-                    True(bluePixels > 40);
+                    AssertMailHighlightColors(image);
                 }
                 using (var icon = OrgLensImages.CreateWindowIcon())
                 {
@@ -45,6 +37,7 @@ namespace OrgLens.Tests
                         {
                             Equal(size, image.Width);
                             Equal(size, image.Height);
+                            AssertMailHighlightColors(image);
                         }
                 }
                 using (var stream = typeof(OrgLensImages).Assembly.GetManifestResourceStream("OrgLens.Images.Application.ico"))
@@ -71,12 +64,19 @@ namespace OrgLens.Tests
                         {
                             Equal(size, image.Width);
                             Equal(size, image.Height);
+                            AssertMailHighlightColors(image);
                         }
                         stream.Position = next;
                     }
                 }
                 True(typeof(OrgLensImages).Assembly.GetManifestResourceNames()
                     .Contains("OrgLens.Images.License.txt"));
+                using (var stream = typeof(OrgLensImages).Assembly.GetManifestResourceStream("OrgLens.Images.License.txt"))
+                using (var reader = new StreamReader(stream))
+                {
+                    string notice = reader.ReadToEnd();
+                    True(notice.Contains("gpt-image-2") && notice.Contains("Exact generation prompt:"));
+                }
             });
             Check("Ribbon picture exposes IPictureDisp and is cached until disconnect", () =>
             {
@@ -104,6 +104,25 @@ namespace OrgLens.Tests
                 Equal(UnmanagedType.IDispatch, ((MarshalAsAttribute)callback.ReturnParameter
                     .GetCustomAttributes(typeof(MarshalAsAttribute), false).Single()).Value);
             });
+        }
+
+        private static void AssertMailHighlightColors(Bitmap image)
+        {
+            Equal(0, (int)image.GetPixel(0, 0).A);
+            Equal(0, (int)image.GetPixel(image.Width - 1, image.Height - 1).A);
+            int bluePixels = 0;
+            int highlightPixels = 0;
+            for (int y = 0; y < image.Height; y++)
+                for (int x = 0; x < image.Width; x++)
+                {
+                    var pixel = image.GetPixel(x, y);
+                    if (pixel.A < 200) continue;
+                    if (pixel.B > 130 && pixel.B > pixel.R * 1.5) bluePixels++;
+                    if (pixel.R > 180 && pixel.G > 110 && pixel.B < 100) highlightPixels++;
+                }
+            int area = image.Width * image.Height;
+            True(bluePixels >= area * 0.05, image.Width + "px icon must retain its blue mail-list panel.");
+            True(highlightPixels >= area * 0.04, image.Width + "px icon must retain its golden highlighted row.");
         }
     }
 }

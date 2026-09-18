@@ -14,7 +14,12 @@ namespace OrgLens.Preview
     {
         internal static void Run()
         {
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
+            Control.CheckForIllegalCrossThreadCalls = true;
             Assert(Thread.CurrentThread.GetApartmentState() == ApartmentState.STA, "The UI must run on STA.");
+            TestLoadingProgress();
+            TestLoadingProgressFailures();
+            TestLoadingProgressShutdown();
             TestPalette();
             TestColorPickers();
             TestModelessWindow();
@@ -345,13 +350,18 @@ namespace OrgLens.Preview
             internal readonly List<string> ConfirmationMessages = new List<string>();
             internal readonly List<string> InformationMessages = new List<string>();
             internal readonly List<string> Errors = new List<string>();
+            internal Action BeforeError;
             public bool Confirm(IWin32Window owner, string message, string title)
             {
                 ConfirmationMessages.Add(message);
                 return ConfirmResult;
             }
             public void Information(IWin32Window owner, string message, string title) { InformationMessages.Add(message); }
-            public void Error(IWin32Window owner, string message, string title) { Errors.Add(title + ": " + message); }
+            public void Error(IWin32Window owner, string message, string title)
+            {
+                BeforeError?.Invoke();
+                Errors.Add(title + ": " + message);
+            }
             public string ChooseOpenFile(IWin32Window owner, string currentPath) { OpenCount++; return OpenPath; }
             public string ChooseSaveFile(IWin32Window owner, string currentPath) { SaveCount++; return SavePath; }
         }
@@ -374,6 +384,7 @@ namespace OrgLens.Preview
             internal string LastAppliedAccount;
             internal string LastRemovedAccount;
             internal bool LastAppliedWithoutHierarchy;
+            internal Action<string> BeforeCall;
 
             public bool IsDemo { get { return DemoMode; } }
             public IReadOnlyList<MailboxAccount> GetAccounts()
@@ -417,6 +428,7 @@ namespace OrgLens.Preview
                 Assert(Thread.CurrentThread.ManagedThreadId == threadId
                     && Thread.CurrentThread.GetApartmentState() == ApartmentState.STA, "All service calls must stay on the original STA UI thread.");
                 Calls.Add(operation);
+                BeforeCall?.Invoke(operation);
             }
             private static void ThrowOnce(ref Exception error)
             {

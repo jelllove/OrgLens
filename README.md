@@ -1,11 +1,13 @@
 # OrgLens
 
+![OrgLens mail-highlight icon](docs/images/orglens-icon.png)
+
 A native **classic Outlook for Windows** COM add-in that discovers the selected
 Exchange account's published manager chain and creates real Outlook conditional
 formatting rules for BOSS, custom senders, and mail addressed explicitly to you.
 No Graph application registration, cloud service, or email-body analysis is involved.
 
-[Download Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.4/OrgLens-0.2.4-Setup.exe)
+[Download Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.5/OrgLens-0.2.5-Setup.exe)
 | [All downloads](https://github.com/jelllove/OrgLens/releases/latest)
 | [Release notes](CHANGELOG.md)
 | [MIT license](LICENSE)
@@ -14,7 +16,7 @@ No Graph application registration, cloud service, or email-body analysis is invo
 
 *Actual application screenshot using fictional people and messages. No real mailbox data.*
 
-**Quick install:** close Outlook, double-click **OrgLens-0.2.4-Setup.exe**, and
+**Quick install:** close Outlook, double-click **OrgLens-0.2.5-Setup.exe**, and
 follow the setup wizard. No unzip, terminal commands, or administrator rights
 are required. Reopen Outlook and choose **OrgLens > Formatting rules**.
 
@@ -45,7 +47,7 @@ recipient metadata in the selected account's Inbox.
 
 Download and extract [the release ZIP](https://github.com/jelllove/OrgLens/releases/latest),
 then open `OrgLens.Preview.exe` in the extracted folder.
-After building from source, use `artifacts\OrgLens-0.2.4\OrgLens.Preview.exe`.
+After building from source, use `artifacts\OrgLens-0.2.5\OrgLens.Preview.exe`.
 
 The clearly marked demo uses fictional people and messages. Its Apply and Remove
 buttons change only the demo's in-memory state. It does not connect to Outlook.
@@ -63,6 +65,12 @@ Changing Outlook's active folder does not retarget your settings: **Apply** stil
 uses the account selected in OrgLens and asks for confirmation.
 File pickers and confirmation dialogs temporarily require a response; directory
 refresh and Apply run on Outlook's UI thread, not as background COM operations.
+
+Startup and directory refresh show a compact spinning **Loading accounts /
+Refreshing manager hierarchy** panel. Its drawing runs independently, so the
+indicator continues animating while Outlook is busy. It shows no invented
+percentage, does not take focus, and closes on completion, failure, or host
+shutdown. Directory operations cannot be cancelled midway.
 
 Closing OrgLens normally prompts about unsaved changes. Exiting Outlook or
 disconnecting the add-in also closes OrgLens; **save your settings file first**,
@@ -102,7 +110,7 @@ Outlook, Outlook on the web, Mac, IMAP, or personal Outlook.com manager discover
 Company policies may prohibit unsigned or user-installed COM add-ins; this local
 prototype is unsigned and does not bypass those policies.
 
-1. Download [OrgLens-0.2.4-Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.4/OrgLens-0.2.4-Setup.exe).
+1. Download [OrgLens-0.2.5-Setup.exe](https://github.com/jelllove/OrgLens/releases/download/v0.2.5/OrgLens-0.2.5-Setup.exe).
 2. Close classic Outlook.
 3. **Double-click the EXE** and follow the setup wizard. It checks prerequisites,
    installs the files, and registers the correct 32-bit or 64-bit add-in automatically.
@@ -165,8 +173,14 @@ the actual stored condition before reporting a successful Apply.
   Custom SMTP addresses are also resolved to Exchange legacy addresses when
   available. Unpublished aliases, send-on-behalf-of mail, and messages with missing
   sender metadata may not match. Only the actual sender is considered.
-- The first Apply copies the Inbox's current table view to a private, folder-only
-  **OrgLens - Inbox** view. The original view is not edited.
+- The first Apply creates a private, folder-only **OrgLens - Inbox** view from
+  the current Inbox layout. Native formatting conditions and fonts are copied
+  separately and verified; Outlook's `View.Copy()` can lose those conditions.
+  The original view is not edited.
+- If you manually delete one or all OrgLens formatting rules, explicitly Apply
+  again to recreate them. If the entire private view was deleted, Apply recreates
+  it from the current Inbox table view. Unrelated rules that you deleted are not
+  restored, and unrelated existing rules are retained.
 - Preserves Outlook's built-in and unrelated custom rules in the copied view.
   Updates and Remove affect only rules with OrgLens's strict versioned identifier.
   Existing v0.1 per-manager rules are replaced by the four grouped rules only on
@@ -225,8 +239,8 @@ can rebuild Setup.exe from an already built package without rerunning the app bu
 Optional integrity verification (not required for installation), in PowerShell:
 
 ```powershell
-(Get-FileHash .\OrgLens-0.2.4-Setup.exe -Algorithm SHA256).Hash.ToLowerInvariant()
-Get-Content .\OrgLens-0.2.4-Setup.exe.sha256
+(Get-FileHash .\OrgLens-0.2.5-Setup.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+Get-Content .\OrgLens-0.2.5-Setup.exe.sha256
 ```
 
 The first line must match the hash at the start of the checksum file.
@@ -282,10 +296,12 @@ powershell.exe -NoProfile -STA -File .\scripts\Test-OutlookRulePersistence.ps1
 ```
 
 This is not run by the normal build. It verifies actual condition/font persistence,
-view switching, updates to an active view, rollback, fail-closed verification and
-removal without changing existing user rules. It was used to reproduce the 0.2.0
-bug and validate the 0.2.1 fix in classic Outlook. Your organization's manager data
-and end-to-end sender matching still depend on your actual directory and mailbox.
+view switching, updates to an active view, manual deletion of individual/all
+OrgLens rules, private-view recreation, preservation of built-in/unrelated rules,
+rollback, fail-closed verification and removal without changing existing user
+rules. It reproduced the view-save/apply and view-copy persistence defects and
+validated their fixes in classic Outlook. Your organization's manager data and
+end-to-end sender matching still depend on your actual directory and mailbox.
 
 The source separates pure hierarchy/filter/reconciliation logic (`OrgLens.Core`),
 native controls and sample service (`OrgLens.Desktop`), the real Office integration
@@ -297,26 +313,26 @@ Add-ins > Manage COM Add-ins** and your organization's add-in policy.
 
 ## Repository and license
 
-### Icon attribution
+### Icon provenance
 
-The blue organization-chart mark is adapted from
-[Lucide Network](https://lucide.dev/icons/network), by Lucide Icons and Contributors,
-under the [ISC license](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
-It is free for commercial use and modification with the copyright/license notice retained.
-OrgLens changes the stroke color to `#2563eb` and renders Windows PNG/ICO sizes;
-the icon geometry is unchanged. It is not a Microsoft or Outlook logo.
+The colorful mail-list icon highlights one message in golden yellow against a
+blue panel. It was generated from a generic text prompt using **gpt-image-2**
+on Azure OpenAI, without sending any email, directory data, or source code.
+This is development-time artwork generation, not a service used by the add-in.
+It is not a Microsoft or Outlook logo.
 
-The source is `assets/orglens.svg`; the upstream SVG blob is
-`e166b3535ca33f9ceee49d2215dd78374689865e`.
-The complete upstream notice is retained as `assets/Lucide.LICENSE.txt`,
-embedded in the UI assembly, and installed as `Lucide.LICENSE.txt`.
-Regenerate the checked-in PNG/ICO assets using built-in Windows WPF:
+The original raster artwork is [assets/orglens-source.png](assets/orglens-source.png).
+The exact prompt and provenance are recorded in
+[assets/OrgLens.Icon.txt](assets/OrgLens.Icon.txt), embedded in the UI assembly,
+and installed as `OrgLens.Icon.txt`. It replaces the Lucide-based icon from 0.2.4;
+that version's original attribution remains in its release/source tag.
+Regenerate all checked-in PNG/ICO sizes locally using built-in Windows WPF:
 
 ```powershell
 powershell.exe -NoProfile -STA -File .\scripts\Generate-Icons.ps1
 ```
 
-No additional image-conversion packages are required.
+No credentials, image API calls, or additional image-conversion packages are required.
 
 ### Software licenses
 

@@ -103,12 +103,13 @@ Source: "{#PackageDir}\OrgLens.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\OrgLens.Desktop.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\Newtonsoft.Json.LICENSE.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PackageDir}\Lucide.LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PackageDir}\OrgLens.Icon.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\OrgLens.Preview.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\OrgLens.Preview.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\CHANGELOG.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PackageDir}\docs\images\orglens-settings.png"; DestDir: "{app}\docs\images"; Flags: ignoreversion
+Source: "{#PackageDir}\docs\images\orglens-icon.png"; DestDir: "{app}\docs\images"; Flags: ignoreversion
 Source: "{#PackageDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion; AfterInstall: InstallRegistration
 
 [Icons]
@@ -634,12 +635,13 @@ begin
   BackupManagedFile('OrgLens.Desktop.dll');
   BackupManagedFile('Newtonsoft.Json.dll');
   BackupManagedFile('Newtonsoft.Json.LICENSE.md');
-  BackupManagedFile('Lucide.LICENSE.txt');
+  BackupManagedFile('OrgLens.Icon.txt');
   BackupManagedFile('OrgLens.Preview.exe');
   BackupManagedFile('OrgLens.Preview.exe.config');
   BackupManagedFile('README.md');
   BackupManagedFile('CHANGELOG.md');
   BackupManagedFile('docs\images\orglens-settings.png');
+  BackupManagedFile('docs\images\orglens-icon.png');
   BackupManagedFile('LICENSE');
 end;
 

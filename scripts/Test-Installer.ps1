@@ -116,7 +116,8 @@ function Test-Architecture([string]$Architecture, [string]$OutlookPath, [Microso
         try { Assert ($key.GetValue('DisplayVersion') -eq $version) "$Architecture Installed apps reports the current version" }
         finally { $key.Dispose() }
         foreach ($file in @('OrgLens.Outlook.dll','OrgLens.Core.dll','OrgLens.Desktop.dll','Newtonsoft.Json.dll',
-            'OrgLens.Preview.exe','LICENSE','Newtonsoft.Json.LICENSE.md','Lucide.LICENSE.txt','README.md','docs\images\orglens-settings.png')) {
+            'OrgLens.Preview.exe','LICENSE','Newtonsoft.Json.LICENSE.md','OrgLens.Icon.txt','README.md',
+            'docs\images\orglens-settings.png','docs\images\orglens-icon.png')) {
             Assert ((Get-FileHash (Join-Path $installDir $file)).Hash -eq (Get-FileHash (Join-Path $snapshot $file)).Hash) `
                 "$Architecture installed payload matches: $file"
         }

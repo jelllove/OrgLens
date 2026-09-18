@@ -62,8 +62,7 @@ namespace OrgLens.Outlook
                     {
                         var original = scope.Own(inbox.CurrentView);
                         RequireTable(original);
-                        view = scope.Own(original.Copy(RuleDefinition.ViewName,
-                            OutlookApi.OlViewSaveOption.olViewSaveOptionThisFolderOnlyMe));
+                        view = scope.Own(CreatePrivateView(views, original, RuleDefinition.ViewName));
                     }
                     var table = RequireTable(view);
                     var nativeRules = scope.Own(table.AutoFormatRules);
@@ -256,6 +255,59 @@ namespace OrgLens.Outlook
                 throw new OrgLensException("OrgLens requires an Inbox table view. Select Compact, Single, " +
                     "or Preview under Outlook's View > Change View and try again.");
             return (OutlookApi.TableView)view;
+        }
+
+        internal static OutlookApi.View CreatePrivateView(OutlookApi.Views views, OutlookApi.View original, string name)
+        {
+            using (var scope = new ComScope())
+            {
+                var sourceRules = scope.Own(RequireTable(original).AutoFormatRules);
+                var snapshot = new NativeFormattingRules(sourceRules).CaptureAll();
+                string layout = original.XML;
+                var created = scope.Own(views.Add(name, OutlookApi.OlViewType.olTableView,
+                    OutlookApi.OlViewSaveOption.olViewSaveOptionThisFolderOnlyMe));
+                try
+                {
+                    // Copy() can save stale source XML and discard its native conditions. Initialize only
+                    // the new view's layout, then restore native rules after the last View.Save().
+                    created.XML = layout;
+                    created.Save();
+                    var persisted = scope.Own(views[name]);
+                    var rules = scope.Own(RequireTable(persisted).AutoFormatRules);
+                    new NativeFormattingRules(rules).RestoreCopy(snapshot);
+                    var verified = scope.Own(views[name]);
+                    var savedRules = scope.Own(RequireTable(verified).AutoFormatRules);
+                    new NativeFormattingRules(savedRules).VerifyCopy(snapshot);
+                    return views[name];
+                }
+                catch (COMException error)
+                {
+                    RemoveIncompleteView(views, name, error);
+                    throw;
+                }
+                catch (OrgLensException error)
+                {
+                    RemoveIncompleteView(views, name, error);
+                    throw;
+                }
+            }
+        }
+
+        private static void RemoveIncompleteView(OutlookApi.Views views, string name, Exception originalError)
+        {
+            try
+            {
+                using (var scope = new ComScope())
+                {
+                    var failed = scope.Own(views[name]);
+                    if (failed != null) failed.Delete();
+                }
+            }
+            catch (COMException cleanupError)
+            {
+                throw new OrgLensException("Outlook could not create or remove the incomplete OrgLens view. " +
+                    "Your source view was not edited.", new AggregateException(originalError, cleanupError));
+            }
         }
 
         private static void RollBack(OutlookApi.View view, NativeFormattingRules adapter,

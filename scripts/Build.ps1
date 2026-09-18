@@ -32,7 +32,8 @@ try {
     $images = Join-Path $package 'docs\images'
     $null = New-Item $images -ItemType Directory -Force
     Copy-Item (Join-Path $root 'docs\images\orglens-settings.png') -Destination $images -Force
-    Copy-Item (Join-Path $root 'assets\Lucide.LICENSE.txt') -Destination $package -Force
+    Copy-Item (Join-Path $root 'docs\images\orglens-icon.png') -Destination $images -Force
+    Copy-Item (Join-Path $root 'assets\OrgLens.Icon.txt') -Destination $package -Force
     $assets = Get-Content (Join-Path $root 'src\OrgLens.Core\obj\project.assets.json') -Raw | ConvertFrom-Json
     $dependency = $assets.libraries.PSObject.Properties | Where-Object { $_.Name -like 'Newtonsoft.Json/*' }
     $relativeLicense = Join-Path ($dependency.Value.path.Replace('/', '\')) 'LICENSE.md'

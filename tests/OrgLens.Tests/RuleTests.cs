@@ -444,6 +444,39 @@ namespace OrgLens.Tests
                 Equal(6, target.Items.Count);
                 Equal(before, target.Snapshot());
             });
+            Check("apply recreates each manually deleted group without changing unrelated rules", () =>
+            {
+                var desired = RuleDefinition.Build(DistinctConfiguration(), new[] { Person("boss") });
+                foreach (var missing in desired)
+                {
+                    var target = SeededRules();
+                    RuleReconciler.Replace(target, desired);
+                    string before = target.Snapshot();
+                    var preserved = target.Items.Where(item => item.Standard ||
+                        !RuleDefinition.IsOwned(item.Name)).ToArray();
+                    target.Remove(target.Items.FindIndex(item => item.Name == missing.Name) + 1);
+                    target.Save();
+                    RuleReconciler.Replace(target, desired);
+                    Equal(before, target.SavedSnapshot, missing.Name);
+                    for (int i = 0; i < preserved.Length; i++)
+                        True(ReferenceEquals(preserved[i], target.Items[i]), missing.Name);
+                }
+            });
+            Check("apply recreates all manually deleted groups from an empty owned-rule snapshot", () =>
+            {
+                var target = SeededRules();
+                var desired = RuleDefinition.Build(DistinctConfiguration(), new[] { Person("boss") });
+                RuleReconciler.Replace(target, desired);
+                string before = target.Snapshot();
+                for (int i = target.Items.Count - 1; i >= 0; i--)
+                    if (!target.Items[i].Standard && RuleDefinition.IsOwned(target.Items[i].Name))
+                        target.Remove(i + 1);
+                target.Save();
+                True(!target.Items.Any(item => RuleDefinition.IsOwned(item.Name)));
+                RuleReconciler.Replace(target, desired);
+                Equal(before, target.SavedSnapshot);
+                Equal(4, target.Added.Count);
+            });
             Check("remove deletes only owned nonstandard v1 and v2 rules in descending index order", () =>
             {
                 var target = SeededRules();

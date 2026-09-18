@@ -15,6 +15,7 @@ namespace OrgLens.Desktop
             bool success = RunOperation("Loading accounts…", "Could not load accounts", () =>
             {
                 var accounts = service.GetAccounts();
+                if (IsDisposed || Disposing) return;
                 suppressEvents = true;
                 try
                 {
@@ -26,7 +27,8 @@ namespace OrgLens.Desktop
                 if (accounts.Count == 0)
                     SetNotice("No supported accounts. Open, edit and save settings here; Refresh to retry Outlook.");
                 SetStatus(accounts.Count == 0 ? "Settings editor ready · No account available for Apply." : "Accounts loaded.", false);
-            });
+            }, showLoading: true);
+            if (IsDisposed || Disposing) return;
             if (!success)
                 SetNotice("Accounts unavailable. Settings editing / files still work. Refresh to retry.");
             else if (accountSelector.Items.Count > 0)
@@ -46,7 +48,8 @@ namespace OrgLens.Desktop
             if (selected == null) return;
             OrgLensConfiguration loaded = null;
             bool success = RunOperation("Loading this account's settings…", "Could not load account settings",
-                () => loaded = ConfigurationValidator.Normalize(service.LoadConfiguration(selected.Id)));
+                () => loaded = ConfigurationValidator.Normalize(service.LoadConfiguration(selected.Id)), showLoading: true);
+            if (IsDisposed || Disposing) return;
             if (!success && activeAccount != null)
             {
                 RestoreAccountSelection();
@@ -86,13 +89,15 @@ namespace OrgLens.Desktop
             bool success = RunOperation("Refreshing manager hierarchy…", "Could not load manager hierarchy", () =>
             {
                 var result = service.DiscoverManagers(activeAccount.Id);
+                if (IsDisposed || Disposing) return;
                 if (result == null || result.Managers == null)
                     throw new OrgLensException("The directory hierarchy is unavailable. Refresh to retry.");
                 managers = result.Managers;
                 editor.ShowMembers(managers);
                 SetNotice((managers.Count == 0 ? "No managers returned. " : managers.Count + " BOSS members. ") + result.Notice);
                 SetStatus("Hierarchy refreshed · Settings and unsaved edits were preserved.", false);
-            });
+            }, showLoading: true);
+            if (IsDisposed || Disposing) return;
             if (!success)
             {
                 editor.ShowMembers(null, "Directory lookup failed. Refresh, or disable both BOSS styles to apply CUSTOM / TO ME.");
@@ -203,14 +208,26 @@ namespace OrgLens.Desktop
                     : "Open / Save never applies. BOSS > CUSTOM > TO ME. Outlook built-in formatting can take precedence.");
         }
 
-        private bool RunOperation(string progress, string errorTitle, Action action)
+        private bool RunOperation(string progress, string errorTitle, Action action, bool showLoading = false)
         {
+            if (IsDisposed || Disposing) return false;
             busy = true;
             UseWaitCursor = true;
             UpdateActions();
             SetStatus(progress, false);
             statusLabel.Update();
-            try { action(); return true; }
+            try
+            {
+                // Only immutable presentation data crosses threads; action stays on the caller's Outlook STA.
+                using (var indicator = showLoading
+                    ? new LoadingProgress(Handle, Bounds, Screen.FromHandle(Handle).WorkingArea, DeviceDpi, progress)
+                    : null)
+                {
+                    loadingProgress = indicator;
+                    action();
+                    return !IsDisposed && !Disposing;
+                }
+            }
             catch (OrgLensException error) { ReportError(errorTitle, error.Message); return false; }
             catch (COMException error)
             {
@@ -226,14 +243,19 @@ namespace OrgLens.Desktop
             catch (NotSupportedException error) { ReportError(errorTitle, error.Message); return false; }
             finally
             {
+                loadingProgress = null;
                 busy = false;
-                UseWaitCursor = false;
-                UpdateActions();
+                if (!IsDisposed && !Disposing)
+                {
+                    UseWaitCursor = false;
+                    UpdateActions();
+                }
             }
         }
 
         private void ReportError(string title, string detail)
         {
+            if (IsDisposed || Disposing) return;
             SetStatus(title + ". No successful change is confirmed.", true);
             dialogs.Error(this, detail, title);
         }

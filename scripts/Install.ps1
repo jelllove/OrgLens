@@ -17,7 +17,7 @@ if (-not $SourcePath) {
 $SourcePath = (Resolve-Path $SourcePath).Path
 $requiredFiles = @('OrgLens.Outlook.dll', 'OrgLens.Core.dll', 'OrgLens.Desktop.dll', 'Newtonsoft.Json.dll', 'Newtonsoft.Json.LICENSE.md',
     'OrgLens.Preview.exe', 'OrgLens.Preview.exe.config', 'Install.ps1', 'Uninstall.ps1', 'README.md',
-    'LICENSE', 'CHANGELOG.md', 'Lucide.LICENSE.txt', 'docs\images\orglens-settings.png')
+    'LICENSE', 'CHANGELOG.md', 'OrgLens.Icon.txt', 'docs\images\orglens-settings.png', 'docs\images\orglens-icon.png')
 foreach ($file in $requiredFiles) {
     if (-not (Test-Path (Join-Path $SourcePath $file))) { throw "Incomplete package: $file is missing. Run scripts\Build.ps1 first." }
 }

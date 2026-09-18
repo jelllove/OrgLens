@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.5
+
+- Shows a compact animated loading panel during initial account discovery and
+  directory refresh. Drawing uses a separate STA; all Outlook operations remain
+  on the original STA. Startup paints the settings first, without changing the
+  modeless editing behavior.
+- Replaces the single-color organization icon with a colorful mail list and a
+  golden highlighted row, generated with gpt-image-2. Updates Ribbon, window,
+  Preview, Setup and Windows Apps artwork; records the prompt/provenance and
+  provides offline, reproducible PNG/ICO resizing.
+- Fixes private-view creation/recreation losing conditions through Outlook's
+  `View.Copy()`. Copies layout and native rule snapshots separately, verifies
+  saved conditions/fonts, and leaves the source view untouched.
+- Reports missing persisted rules explicitly and disables remaining OrgLens
+  rules instead of failing with a null-reference exception.
+- Adds native and pure-logic regressions for manually deleting individual/all
+  OrgLens rules, view recreation and unrelated-rule preservation; adds real
+  animation, original-thread, error-cleanup and shutdown UI checks.
+
+Settings schema remains version 2. Close Outlook before upgrading. Refresh and
+explicitly Apply after installation to recreate deleted OrgLens rules.
+
 ## 0.2.4
 
 - Replaces Outlook's generic formatting icon with a blue organization-chart icon

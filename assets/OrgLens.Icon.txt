@@ -1,0 +1,18 @@
+OrgLens mail-highlight icon
+
+Generated from a text prompt with the gpt-image-2 deployment on Azure OpenAI,
+using the imagegen skill's CLI on 2026-09-18. No reference image, email content,
+organization information, or source code was sent to the image service.
+Requested settings: 1024x1024, high quality, PNG, transparent background.
+
+Source artwork: assets/orglens-source.png.
+The checked-in source is resized locally by scripts/Generate-Icons.ps1 for
+Outlook Ribbon, the settings window, Preview, Setup, and Windows Apps.
+Rebuilding these assets does not call an image service or require credentials.
+
+This is AI-generated artwork, not a Microsoft or Outlook logo. It does not use
+the Lucide Network artwork from OrgLens 0.2.4. Distributed with OrgLens under
+the project's MIT license (see LICENSE), to the extent applicable.
+
+Exact generation prompt:
+Use case: logo-brand. Asset type: Windows Outlook add-in app icon, readable at 16 and 32 pixels. Primary request: an original colorful icon of an email list with exactly one message row highlighted. Subject: a compact blue rounded mail-list panel with three chunky simplified horizontal message rows; the middle row is prominently highlighted in warm golden yellow, with a simple envelope mark. Style: polished flat two-dimensional app icon, bold clean geometry, vivid blue and golden-yellow contrast, minimal detail. Composition: centered, straight-on, single isolated icon filling 88 percent of a square canvas. Constraints: no letters, no readable text, no Microsoft or Outlook logos, no trademark shapes, no watermark, no photorealism; transparent background outside the icon.

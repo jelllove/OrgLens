@@ -83,7 +83,7 @@ namespace OrgLens.Outlook
 
         private void VerifyCondition(OutlookApi.AutoFormatRule actual, string name, string filter, bool enabled)
         {
-            if (actual.Name == name && actual.Enabled == enabled &&
+            if (actual != null && actual.Name == name && actual.Enabled == enabled &&
                 string.Equals(actual.Filter, filter, StringComparison.Ordinal)) return;
             try { DisableOwnedRules(); }
             catch (COMException error)
@@ -97,16 +97,74 @@ namespace OrgLens.Outlook
 
         public IReadOnlyList<NativeRuleSnapshot> CaptureOwned()
         {
+            return Capture(true);
+        }
+
+        public IReadOnlyList<NativeRuleSnapshot> CaptureAll()
+        {
+            return Capture(false);
+        }
+
+        private IReadOnlyList<NativeRuleSnapshot> Capture(bool ownedOnly)
+        {
             var result = new List<NativeRuleSnapshot>();
             for (int i = 1; i <= rules.Count; i++)
             {
                 using (var scope = new ComScope())
                 {
                     var rule = scope.Own(rules[i]);
-                    if (!rule.Standard && RuleDefinition.IsOwned(rule.Name)) result.Add(NativeRuleSnapshot.Capture(i, rule));
+                    if (!ownedOnly || (!rule.Standard && RuleDefinition.IsOwned(rule.Name)))
+                        result.Add(NativeRuleSnapshot.Capture(i, rule));
                 }
             }
             return result;
+        }
+
+        public void RestoreCopy(IReadOnlyList<NativeRuleSnapshot> snapshot)
+        {
+            var existing = Read();
+            for (int i = existing.Count - 1; i >= 0; i--)
+                if (!existing[i].Standard) Remove(i + 1);
+            expected.Clear();
+            int standardIndex = 0;
+            foreach (var saved in snapshot)
+            {
+                if (!saved.Standard) continue;
+                using (var scope = new ComScope())
+                {
+                    var actual = ++standardIndex <= rules.Count ? scope.Own(rules[standardIndex]) : null;
+                    if (actual == null || !actual.Standard || actual.Name != saved.Name)
+                        throw new OrgLensException("Outlook could not preserve the original view's built-in rules.");
+                }
+            }
+            if (standardIndex != rules.Count)
+                throw new OrgLensException("Outlook changed the original view's built-in rule count.");
+            foreach (var saved in snapshot)
+            {
+                using (var scope = new ComScope())
+                {
+                    var rule = scope.Own(saved.Standard ? rules[saved.Index] :
+                        saved.Index > rules.Count ? rules.Add(saved.Name) : rules.Insert(saved.Name, saved.Index));
+                    saved.Restore(rule);
+                    if (!saved.Standard)
+                        expected.Add(new ExpectedCondition(saved.Index, saved.Name, saved.Filter, saved.Enabled));
+                }
+            }
+            Save();
+        }
+
+        public void VerifyCopy(IReadOnlyList<NativeRuleSnapshot> snapshot)
+        {
+            if (rules.Count != snapshot.Count)
+                throw new OrgLensException("Outlook changed the copied view's formatting rule count.");
+            foreach (var saved in snapshot)
+            {
+                using (var scope = new ComScope())
+                {
+                    if (!saved.Matches(scope.Own(rules[saved.Index])))
+                        throw new OrgLensException("Outlook could not preserve the original view's formatting rules.");
+                }
+            }
         }
 
         public void RestoreOwned(IReadOnlyList<NativeRuleSnapshot> snapshot)
